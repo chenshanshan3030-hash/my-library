@@ -178,8 +178,8 @@ label { font-weight: 900; display: block; margin-bottom: 4px; }
 }
 .spine {
   position: relative; flex: none; margin-bottom: 14px; /* 站在層板上 */
-  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-  padding: 26px 0 14px; text-decoration: none; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: 26px 0 40px; text-decoration: none; overflow: hidden;
   border-radius: 3px 3px 2px 2px;
   background:
     linear-gradient(to right, rgba(0,0,0,.55) 0, rgba(255,255,255,.14) 22%, rgba(255,255,255,.04) 45%, rgba(0,0,0,.35) 100%),
@@ -211,7 +211,7 @@ label { font-weight: 900; display: block; margin-bottom: 4px; }
 }
 .sp-author {
   writing-mode: vertical-rl; color: #d8c592; font-size: .7rem; letter-spacing: 1px;
-  flex: 0 0 auto; max-height: 64px; margin: 6px 0 22px; opacity: .9;
+  flex: 0 100 auto; min-height: 0; max-height: 64px; margin-top: 6px; opacity: .9;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .spine .gem { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); }

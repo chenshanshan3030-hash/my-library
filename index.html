@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我的圖書館</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+<link rel="stylesheet" href="assets/style.css?v=1">
+<script src="assets/app.js?v=1"></script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="index.html">📚 我的圖書館</a>
+  <nav class="tabs">
+    <a href="index.html">🏠 書架</a>
+    <a href="add.html">➕ 加一本書</a>
+    <a href="backup.html">💾 備份</a>
+    <a href="about.html">❓ 說明</a>
+  </nav>
+</div></header>
+<main class="wrap">
+  <h1>我的書架</h1>
+  <div class="toolbar">
+    <input id="q" type="search" placeholder="🔍 找書名、作者、分類…" aria-label="搜尋">
+    <select id="fStatus" aria-label="閱讀狀態">
+      <option value="">全部狀態</option>
+      <option value="want">想讀</option>
+      <option value="reading">正在讀</option>
+      <option value="done">讀完了</option>
+    </select>
+    <select id="fCat" aria-label="分類"><option value="">全部分類</option></select>
+    <select id="sort" aria-label="排序">
+      <option value="new">最新加入</option>
+      <option value="title">書名</option>
+      <option value="rating">評分高到低</option>
+    </select>
+    <a class="btn" href="add.html">➕ 加一本書</a>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div id="shelf"></div>
+
+<script>
+const books = loadBooks();
+const $ = id => document.getElementById(id);
+
+const cats = [...new Set(books.map(b => b.category).filter(Boolean))].sort();
+$('fCat').innerHTML += cats.map(c => `<option>${esc(c)}</option>`).join('');
+
+function render() {
+  const q = $('q').value.trim().toLowerCase();
+  const st = $('fStatus').value, cat = $('fCat').value, sort = $('sort').value;
+  let list = books.filter(b =>
+    (!st || b.status === st) && (!cat || b.category === cat) &&
+    (!q || [b.title, b.author, b.category, b.notes].join(' ').toLowerCase().includes(q)));
+  if (sort === 'title') list.sort((a, b) => a.title.localeCompare(b.title, 'zh-Hant'));
+  else if (sort === 'rating') list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  else list.sort((a, b) => (b.added || 0) - (a.added || 0));
+
+  const count = s => books.filter(b => b.status === s).length;
+  $('stats').innerHTML = `<span>共 <b>${books.length}</b> 本</span>
+    <span>📖 正在讀 <b>${count('reading')}</b></span>
+    <span>✅ 讀完了 <b>${count('done')}</b></span>
+    <span>💭 想讀 <b>${count('want')}</b></span>`;
+
+  if (!books.length) {
+    $('shelf').innerHTML = `<div class="card empty"><div class="big">📭</div>
+      <p>書架還是空的，來放第一本書吧！</p><a class="btn" href="add.html">➕ 加一本書</a></div>`;
+    return;
+  }
+  if (!list.length) {
+    $('shelf').innerHTML = `<div class="card empty"><div class="big">🔎</div><p>找不到符合的書。</p></div>`;
+    return;
+  }
+  $('shelf').innerHTML = '<div class="shelf">' + list.map(b => `
+    <a class="book" href="book.html?id=${encodeURIComponent(b.id)}">
+      ${coverHtml(b)}
+      <span class="t">${esc(b.title)}</span>
+      ${b.author ? `<span class="a">${esc(b.author)}</span>` : ''}
+      <span>${STATUS[b.status] ? `<span class="badge s-${b.status}">${STATUS[b.status]}</span>` : ''}
+        ${(b.links || []).length ? `<span class="badge link">🔗 ${b.links.length}</span>` : ''}</span>
+    </a>`).join('') + '</div>';
+}
+['q', 'fStatus', 'fCat', 'sort'].forEach(id => $(id).addEventListener('input', render));
+render();
+</script>
+</main>
+<footer>📚 我的圖書館 · 書的資料只存在你這台裝置的瀏覽器裡，記得常到「備份」頁存一份喔</footer>
+</body>
+</html>

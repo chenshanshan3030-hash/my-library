@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>備份 · 我的圖書館</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+<link rel="stylesheet" href="assets/style.css?v=1">
+<script src="assets/app.js?v=1"></script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="index.html">📚 我的圖書館</a>
+  <nav class="tabs">
+    <a href="index.html">🏠 書架</a>
+    <a href="add.html">➕ 加一本書</a>
+    <a href="backup.html">💾 備份</a>
+    <a href="about.html">❓ 說明</a>
+  </nav>
+</div></header>
+<main class="wrap">
+  <h1>💾 備份與還原</h1>
+  <div class="card" style="margin-bottom:20px">
+    <h2 style="margin-top:0;font-size:1.2rem">⬇️ 下載備份</h2>
+    <p>把書架上所有的書存成一個檔案。換電腦、換手機或清除瀏覽器之前，先下載一份！</p>
+    <p class="muted" id="count"></p>
+    <button class="btn" id="exportBtn">⬇️ 下載備份檔</button>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <h2 style="margin-top:0;font-size:1.2rem">⬆️ 還原備份</h2>
+    <p>選擇之前下載的備份檔（.json）。</p>
+    <div class="field">
+      <label><input type="radio" name="mode" value="merge" checked style="width:auto"> 加進現在的書架（相同的書不會重複）</label>
+      <label><input type="radio" name="mode" value="replace" style="width:auto"> 整個換成備份裡的書</label>
+    </div>
+    <input type="file" id="file" accept=".json,application/json">
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0;font-size:1.2rem">🧹 清空書架</h2>
+    <p>把所有書都拿掉（建議先下載備份）。</p>
+    <button class="btn danger" id="clearBtn">🧹 清空書架</button>
+  </div>
+
+<script>
+const $ = id => document.getElementById(id);
+const showCount = () => $('count').textContent = '目前書架上有 ' + loadBooks().length + ' 本書。';
+showCount();
+
+$('exportBtn').onclick = () => {
+  const blob = new Blob([JSON.stringify({ app: 'my-library', version: 1, books: loadBooks() }, null, 2)],
+    { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '我的圖書館備份-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('✅ 備份檔下載好了');
+};
+
+$('file').onchange = async e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    const incoming = (Array.isArray(data) ? data : data.books || [])
+      .filter(b => b && typeof b.title === 'string' && b.title.trim())
+      .map(b => ({
+        id: String(b.id || uid()), added: Number(b.added) || Date.now(),
+        title: b.title.trim(), author: String(b.author || ''), category: String(b.category || ''),
+        status: STATUS[b.status] ? b.status : 'want', rating: Math.max(0, Math.min(5, Number(b.rating) || 0)),
+        cover: safeUrl(b.cover), notes: String(b.notes || ''),
+        links: (Array.isArray(b.links) ? b.links : []).map(l => ({ name: String(l.name || ''), url: safeUrl(l.url) })).filter(l => l.url)
+      }));
+    if (!incoming.length) { alert('這個檔案裡找不到書。'); return; }
+    const mode = document.querySelector('input[name=mode]:checked').value;
+    let books;
+    if (mode === 'replace') {
+      if (!confirm('要把現在的書架換成備份裡的 ' + incoming.length + ' 本書嗎？')) return;
+      books = incoming;
+    } else {
+      books = loadBooks();
+      const ids = new Set(books.map(b => b.id));
+      incoming.forEach(b => { if (!ids.has(b.id)) books.push(b); });
+    }
+    if (saveBooks(books)) { showCount(); toast('✅ 還原好了！'); }
+  } catch (err) {
+    alert('讀不懂這個檔案，請確認是「我的圖書館」的備份檔。');
+  } finally { e.target.value = ''; }
+};
+
+$('clearBtn').onclick = () => {
+  if (!confirm('確定要清空整個書架嗎？這個動作沒辦法復原喔！')) return;
+  if (saveBooks([])) { showCount(); toast('書架已清空'); }
+};
+</script>
+</main>
+<footer>📚 我的圖書館 · 書的資料只存在你這台裝置的瀏覽器裡，記得常到「備份」頁存一份喔</footer>
+</body>
+</html>

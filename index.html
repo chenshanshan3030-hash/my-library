@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=3">
-<script src="assets/app.js?v=3"></script>
+<link rel="stylesheet" href="assets/style.css?v=4">
+<script src="assets/app.js?v=4"></script>
 </head>
 <body>
 <header class="top"><div class="wrap">
@@ -62,9 +62,9 @@ function render() {
 
   const count = s => books.filter(b => b.status === s).length;
   $('stats').innerHTML = `<span>共 <b>${books.length}</b> 本</span>
-    <span>📖 正在讀 <b>${count('reading')}</b></span>
-    <span>✨ 讀完了 <b>${count('done')}</b></span>
-    <span>🔮 想讀 <b>${count('want')}</b></span>`;
+    <span><i class="gem s-reading"></i>正在讀 <b>${count('reading')}</b></span>
+    <span><i class="gem s-done"></i>讀完了 <b>${count('done')}</b></span>
+    <span><i class="gem s-want"></i>想讀 <b>${count('want')}</b></span>`;
 
   if (!books.length) {
     $('shelf').innerHTML = `<div class="card empty"><div class="big">🕯️</div>
@@ -75,14 +75,24 @@ function render() {
     $('shelf').innerHTML = `<div class="card empty"><div class="big">🔎</div><p>找不到符合的書。</p></div>`;
     return;
   }
-  $('shelf').innerHTML = '<div class="shelf">' + list.map(b => `
-    <a class="book" href="book.html?id=${encodeURIComponent(b.id)}">
-      ${coverHtml(b)}
-      <span class="ledge"></span>
-      <span class="t">${esc(b.title)}</span>
-      ${b.author ? `<span class="a">${esc(b.author)}</span>` : ''}
-      ${STATUS[b.status] ? `<span><span class="badge s-${b.status}">${STATUS[b.status]}</span></span>` : ''}
-    </a>`).join('') + '</div>';
+  $('shelf').innerHTML = '<div class="shelf spines">' + list.map(spineHtml).join('') + '</div>';
+}
+
+// 書背：高度、寬度、花紋依書名決定，每本書都長得不太一樣
+function spineHtml(b) {
+  let h = 0;
+  for (const ch of String(b.id) + b.title) h = (h * 33 + ch.codePointAt(0)) >>> 0;
+  const height = 190 + (h % 7) * 10;            // 190–250px
+  const width = 46 + ((h >>> 3) % 5) * 6;       // 46–70px
+  const deco = (h >>> 6) % 3;                   // 三種燙金花紋
+  const tip = [b.title, b.author, STATUS[b.status]].filter(Boolean).join('｜');
+  return `<a class="spine deco-${deco}" href="book.html?id=${encodeURIComponent(b.id)}"
+      style="--leather:${colorFor(b.title)};height:${height}px;width:${width}px;margin-top:${286 - height}px"
+      title="${esc(tip)}" aria-label="${esc(tip)}">
+    <span class="sp-title">${esc(b.title)}</span>
+    ${b.author ? `<span class="sp-author">${esc(b.author)}</span>` : ''}
+    ${STATUS[b.status] ? `<i class="gem s-${b.status}"></i>` : ''}
+  </a>`;
 }
 ['q', 'fStatus', 'fCat', 'sort'].forEach(id => $(id).addEventListener('input', render));
 render();

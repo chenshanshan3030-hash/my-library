@@ -166,6 +166,64 @@ label { font-weight: 900; display: block; margin-bottom: 4px; }
 .badge.s-reading { background: #f3dc8e; color: #5a3d00; }
 .badge.s-done { background: #cfe6d3; color: #1d4a2a; }
 
+/* 書背模式：每一層高 300px，最下面 14px 是木頭層板 */
+.shelf.spines {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0 4px;
+  padding: 0 16px; grid-template-columns: none;
+  background:
+    repeating-linear-gradient(to bottom,
+      transparent 0, transparent 286px,
+      var(--gold-dark) 286px, #7a5230 287px, var(--wood-light) 296px, #1a0f07 300px),
+    linear-gradient(to bottom, #24160c, var(--wood));
+}
+.spine {
+  position: relative; flex: none; margin-bottom: 14px; /* 站在層板上 */
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  padding: 26px 0 14px; text-decoration: none; overflow: hidden;
+  border-radius: 3px 3px 2px 2px;
+  background:
+    linear-gradient(to right, rgba(0,0,0,.55) 0, rgba(255,255,255,.14) 22%, rgba(255,255,255,.04) 45%, rgba(0,0,0,.35) 100%),
+    var(--leather, #5b1a1a);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.5), 2px 0 4px rgba(0,0,0,.4);
+  transition: transform .2s, box-shadow .2s;
+}
+.spine:hover, .spine:focus-visible {
+  transform: translateY(-12px);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.5), 0 0 16px rgba(243,220,142,.55);
+  outline: none;
+}
+/* 燙金橫條 */
+.spine::before, .spine::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 10px; pointer-events: none;
+  border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold);
+}
+.spine::before { top: 8px; }
+.spine::after { bottom: 30px; }
+.spine.deco-1::before { height: 4px; border-bottom-width: 1px; }
+.spine.deco-1::after { height: 4px; border-top-width: 1px; }
+.spine.deco-2::before, .spine.deco-2::after { height: 0; border-bottom: none; border-top-width: 3px; }
+.sp-title {
+  writing-mode: vertical-rl; text-orientation: mixed;
+  color: var(--gold-light); font-weight: 900; font-size: 1rem; letter-spacing: 2px; line-height: 1.15;
+  text-shadow: 0 1px 2px #000;
+  flex: 1 1 auto; min-height: 0; max-height: 100%; overflow: hidden; padding: 4px 0;
+}
+.sp-author {
+  writing-mode: vertical-rl; color: #d8c592; font-size: .7rem; letter-spacing: 1px;
+  max-height: 64px; overflow: hidden; margin: 6px 0 22px; opacity: .9;
+}
+.spine .gem { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); }
+.gem {
+  display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px;
+  vertical-align: middle; border: 1px solid var(--gold-light); box-shadow: 0 0 5px rgba(0,0,0,.6);
+}
+.gem.s-want { background: radial-gradient(circle at 35% 35%, #e2c6ff, #7a3fb5); }
+.gem.s-reading { background: radial-gradient(circle at 35% 35%, #fff2b0, #d49a00); }
+.gem.s-done { background: radial-gradient(circle at 35% 35%, #c8ffd8, #23864a); }
+@media (max-width: 640px) {
+  .sp-title { font-size: .9rem; }
+}
+
 .empty { text-align: center; padding: 48px 16px; }
 .empty .big { font-size: 3rem; }
 

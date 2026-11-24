@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>書的資料 · 我的圖書館</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
-<link rel="stylesheet" href="assets/style.css?v=1">
-<script src="assets/app.js?v=1"></script>
+<link rel="stylesheet" href="assets/style.css?v=2">
+<script src="assets/app.js?v=2"></script>
 </head>
 <body>
 <header class="top"><div class="wrap">
@@ -62,7 +62,7 @@ if (!b) {
     if (!confirm('確定要把「' + b.title + '」從書架拿掉嗎？')) return;
     if (saveBooks(loadBooks().filter(x => x.id !== b.id))) location.href = 'index.html';
   };
-  if (qs('saved')) { toast('✅ 已經放上書架了！'); history.replaceState(null, '', 'book.html?id=' + encodeURIComponent(b.id)); }
+  if (qs('saved')) { toast(qs('saved') === '2' ? '✅ 修改好了！' : '✅ 已經放上書架了！'); history.replaceState(null, '', 'book.html?id=' + encodeURIComponent(b.id)); }
 }
 </script>
 </main>

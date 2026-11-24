@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>加一本書 · 我的圖書館</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
-<link rel="stylesheet" href="assets/style.css?v=1">
-<script src="assets/app.js?v=1"></script>
+<link rel="stylesheet" href="assets/style.css?v=2">
+<script src="assets/app.js?v=2"></script>
 </head>
 <body>
 <header class="top"><div class="wrap">
@@ -149,7 +149,7 @@ $('form').addEventListener('submit', e => {
   let id;
   if (editing) { Object.assign(editing, data); id = editing.id; }
   else { id = uid(); books.push({ id, added: Date.now(), ...data }); }
-  if (saveBooks(books)) location.href = 'book.html?id=' + encodeURIComponent(id) + '&saved=1';
+  if (saveBooks(books)) location.href = 'book.html?id=' + encodeURIComponent(id) + '&saved=' + (editing ? 2 : 1);
 });
 </script>
 </main>

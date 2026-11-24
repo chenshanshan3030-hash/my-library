@@ -60,7 +60,8 @@ function safeUrl(u) {
   if (!/^[a-z][a-z0-9+.-]*:/i.test(u)) u = 'https://' + u;
   try {
     const p = new URL(u);
-    return (p.protocol === 'http:' || p.protocol === 'https:') ? p.href : '';
+    if (p.protocol !== 'http:' && p.protocol !== 'https:') return '';
+    try { return decodeURI(p.href); } catch (e) { return p.href; }
   } catch (e) { return ''; }
 }
 
@@ -99,6 +100,7 @@ function toast(msg) {
 // 標出目前頁面的分頁
 document.addEventListener('DOMContentLoaded', () => {
   const page = location.pathname.split('/').pop() || 'index.html';
+  if (page === 'add.html' && location.search.includes('id=')) return;
   document.querySelectorAll('nav.tabs a').forEach(a => {
     if (a.getAttribute('href') === page) a.classList.add('on');
   });

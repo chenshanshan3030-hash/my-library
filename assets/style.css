@@ -206,11 +206,13 @@ label { font-weight: 900; display: block; margin-bottom: 4px; }
   writing-mode: vertical-rl; text-orientation: mixed;
   color: var(--gold-light); font-weight: 900; font-size: 1rem; letter-spacing: 2px; line-height: 1.15;
   text-shadow: 0 1px 2px #000;
-  flex: 1 1 auto; min-height: 0; max-height: 100%; overflow: hidden; padding: 4px 0;
+  flex: 0 1 auto; min-height: 0; padding: 4px 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .sp-author {
   writing-mode: vertical-rl; color: #d8c592; font-size: .7rem; letter-spacing: 1px;
-  max-height: 64px; overflow: hidden; margin: 6px 0 22px; opacity: .9;
+  flex: 0 0 auto; max-height: 64px; margin: 6px 0 22px; opacity: .9;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .spine .gem { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); }
 .gem {

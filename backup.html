@@ -3,23 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1a0c12">
 <title>備份 · 我的圖書館</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
-<link rel="stylesheet" href="assets/style.css?v=2">
-<script src="assets/app.js?v=2"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📜</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=3">
+<script src="assets/app.js?v=3"></script>
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="logo" href="index.html">📚 我的圖書館</a>
+  <a class="logo" href="index.html">📜 我的圖書館</a>
   <nav class="tabs">
-    <a href="index.html">🏠 書架</a>
-    <a href="add.html">➕ 加一本書</a>
+    <a href="index.html">🕯️ 書架</a>
+    <a href="add.html">🪶 加一本書</a>
     <a href="backup.html">💾 備份</a>
     <a href="about.html">❓ 說明</a>
   </nav>
 </div></header>
 <main class="wrap">
-  <h1>💾 備份與還原</h1>
+  <h1>備份與還原</h1>
   <div class="card" style="margin-bottom:20px">
     <h2 style="margin-top:0;font-size:1.2rem">⬇️ 下載備份</h2>
     <p>把書架上所有的書存成一個檔案。換電腦、換手機或清除瀏覽器之前，先下載一份！</p>
@@ -47,14 +51,14 @@ const showCount = () => $('count').textContent = '目前書架上有 ' + loadBoo
 showCount();
 
 $('exportBtn').onclick = () => {
-  const blob = new Blob([JSON.stringify({ app: 'my-library', version: 1, books: loadBooks() }, null, 2)],
+  const blob = new Blob([JSON.stringify({ app: 'my-library', version: 2, books: loadBooks() }, null, 2)],
     { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = '我的圖書館備份-' + new Date().toISOString().slice(0, 10) + '.json';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  toast('✅ 備份檔下載好了');
+  toast('✨ 備份檔下載好了');
 };
 
 $('file').onchange = async e => {
@@ -68,8 +72,7 @@ $('file').onchange = async e => {
         id: String(b.id || uid()), added: Number(b.added) || Date.now(),
         title: b.title.trim(), author: String(b.author || ''), category: String(b.category || ''),
         status: STATUS[b.status] ? b.status : 'want', rating: Math.max(0, Math.min(5, Number(b.rating) || 0)),
-        cover: safeUrl(b.cover), notes: String(b.notes || ''),
-        links: (Array.isArray(b.links) ? b.links : []).map(l => ({ name: String(l.name || ''), url: safeUrl(l.url) })).filter(l => l.url)
+        cover: safeUrl(b.cover), notes: String(b.notes || '')
       }));
     if (!incoming.length) { alert('這個檔案裡找不到書。'); return; }
     const mode = document.querySelector('input[name=mode]:checked').value;
@@ -82,7 +85,7 @@ $('file').onchange = async e => {
       const ids = new Set(books.map(b => b.id));
       incoming.forEach(b => { if (!ids.has(b.id)) books.push(b); });
     }
-    if (saveBooks(books)) { showCount(); toast('✅ 還原好了！'); }
+    if (saveBooks(books)) { showCount(); toast('✨ 還原好了！'); }
   } catch (err) {
     alert('讀不懂這個檔案，請確認是「我的圖書館」的備份檔。');
   } finally { e.target.value = ''; }
@@ -94,6 +97,6 @@ $('clearBtn').onclick = () => {
 };
 </script>
 </main>
-<footer>📚 我的圖書館 · 書的資料只存在你這台裝置的瀏覽器裡，記得常到「備份」頁存一份喔</footer>
+<footer>✦ 我的圖書館 ✦ 書的資料只存在你這台裝置的瀏覽器裡，記得常到「備份」頁存一份喔</footer>
 </body>
 </html>

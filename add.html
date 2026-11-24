@@ -3,27 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1a0c12">
 <title>加一本書 · 我的圖書館</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
-<link rel="stylesheet" href="assets/style.css?v=2">
-<script src="assets/app.js?v=2"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📜</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=3">
+<script src="assets/app.js?v=3"></script>
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="logo" href="index.html">📚 我的圖書館</a>
+  <a class="logo" href="index.html">📜 我的圖書館</a>
   <nav class="tabs">
-    <a href="index.html">🏠 書架</a>
-    <a href="add.html">➕ 加一本書</a>
+    <a href="index.html">🕯️ 書架</a>
+    <a href="add.html">🪶 加一本書</a>
     <a href="backup.html">💾 備份</a>
     <a href="about.html">❓ 說明</a>
   </nav>
 </div></header>
 <main class="wrap">
-  <h1 id="heading">➕ 加一本書</h1>
+  <h1 id="heading">加一本書</h1>
   <form id="form" class="card" novalidate>
     <div class="field">
       <label for="title">書名 <span class="req">*</span></label>
-      <input id="title" required maxlength="200" placeholder="例如：小王子">
+      <input id="title" required maxlength="200">
     </div>
     <div class="row">
       <div class="field">
@@ -32,7 +36,7 @@
       </div>
       <div class="field">
         <label for="category">分類</label>
-        <input id="category" list="catList" maxlength="50" placeholder="例如：繪本、小說、科普">
+        <input id="category" list="catList" maxlength="50" placeholder="例如：奇幻、小說、科普">
         <datalist id="catList"></datalist>
       </div>
     </div>
@@ -40,9 +44,9 @@
       <div class="field">
         <label for="status">閱讀狀態</label>
         <select id="status">
-          <option value="want">💭 想讀</option>
+          <option value="want">🔮 想讀</option>
           <option value="reading">📖 正在讀</option>
-          <option value="done">✅ 讀完了</option>
+          <option value="done">✨ 讀完了</option>
         </select>
       </div>
       <div class="field">
@@ -51,21 +55,16 @@
       </div>
     </div>
     <div class="field">
-      <label>🔗 書的連結 <span class="muted" style="font-weight:400">（可以放書店、電子書、介紹、影片…可加很多個）</span></label>
-      <div id="links"></div>
-      <button type="button" class="btn ghost small" id="addLink">＋ 再加一個連結</button>
-    </div>
-    <div class="field">
-      <label for="cover">封面圖片網址 <span class="muted" style="font-weight:400">（可不填，會自動用彩色封面）</span></label>
+      <label for="cover">封面圖片網址 <span class="muted" style="font-weight:400">（可不填，會自動做成皮革封面）</span></label>
       <input id="cover" type="url" placeholder="https://…/cover.jpg">
     </div>
     <div class="field">
       <label for="notes">心得 / 筆記</label>
       <textarea id="notes" rows="5" maxlength="5000"></textarea>
     </div>
-    <p id="err" style="color:var(--danger);font-weight:700" hidden></p>
+    <p id="err" style="color:var(--wine);font-weight:900" hidden></p>
     <div class="actions">
-      <button class="btn" type="submit" id="saveBtn">💾 放上書架</button>
+      <button class="btn" type="submit" id="saveBtn">🪶 放上書架</button>
       <a class="btn ghost" href="index.html" id="cancel">取消</a>
     </div>
   </form>
@@ -89,25 +88,14 @@ $('stars').addEventListener('click', e => {
   if (n) { rating = (rating === n) ? 0 : n; drawStars(); }
 });
 
-function addLinkRow(name = '', url = '') {
-  const row = document.createElement('div');
-  row.className = 'link-row';
-  row.innerHTML = `<input class="ln" placeholder="連結名稱（例如：博客來）" maxlength="100" value="${esc(name)}">
-    <input class="lu" type="url" placeholder="https://…" value="${esc(url)}">
-    <button type="button" class="btn ghost small" aria-label="刪除這個連結">✕</button>`;
-  row.querySelector('button').onclick = () => row.remove();
-  $('links').appendChild(row);
-}
-$('addLink').onclick = () => addLinkRow();
-
 if (editId && !editing) {
   document.querySelector('main').innerHTML =
     '<div class="card empty"><div class="big">❓</div><p>找不到這本書。</p><a class="btn" href="index.html">回書架</a></div>';
 } else {
   if (editing) {
     document.title = '編輯 · 我的圖書館';
-    $('heading').textContent = '✏️ 編輯：' + editing.title;
-    $('saveBtn').textContent = '💾 儲存修改';
+    $('heading').textContent = '編輯：' + editing.title;
+    $('saveBtn').textContent = '🪶 儲存修改';
     $('cancel').href = 'book.html?id=' + encodeURIComponent(editing.id);
     $('title').value = editing.title || '';
     $('author').value = editing.author || '';
@@ -116,9 +104,7 @@ if (editId && !editing) {
     $('cover').value = editing.cover || '';
     $('notes').value = editing.notes || '';
     rating = editing.rating || 0;
-    (editing.links || []).forEach(l => addLinkRow(l.name, l.url));
   }
-  if (!$('links').children.length) addLinkRow();
   drawStars();
 }
 
@@ -127,16 +113,6 @@ $('form').addEventListener('submit', e => {
   const err = msg => { $('err').textContent = msg; $('err').hidden = !msg; };
   const title = $('title').value.trim();
   if (!title) { err('請填書名喔！'); $('title').focus(); return; }
-
-  const links = [];
-  for (const row of $('links').querySelectorAll('.link-row')) {
-    const raw = row.querySelector('.lu').value.trim();
-    const name = row.querySelector('.ln').value.trim();
-    if (!raw) continue;
-    const url = safeUrl(raw);
-    if (!url) { err('這個連結看起來不對：' + raw); row.querySelector('.lu').focus(); return; }
-    links.push({ name: name || hostOf(url) || '連結', url });
-  }
   const coverRaw = $('cover').value.trim();
   const cover = safeUrl(coverRaw);
   if (coverRaw && !cover) { err('封面圖片網址看起來不對。'); $('cover').focus(); return; }
@@ -144,15 +120,15 @@ $('form').addEventListener('submit', e => {
 
   const data = {
     title, author: $('author').value.trim(), category: $('category').value.trim(),
-    status: $('status').value, rating, links, cover, notes: $('notes').value.trim()
+    status: $('status').value, rating, cover, notes: $('notes').value.trim()
   };
   let id;
-  if (editing) { Object.assign(editing, data); id = editing.id; }
+  if (editing) { Object.assign(editing, data); delete editing.links; id = editing.id; }
   else { id = uid(); books.push({ id, added: Date.now(), ...data }); }
   if (saveBooks(books)) location.href = 'book.html?id=' + encodeURIComponent(id) + '&saved=' + (editing ? 2 : 1);
 });
 </script>
 </main>
-<footer>📚 我的圖書館 · 書的資料只存在你這台裝置的瀏覽器裡，記得常到「備份」頁存一份喔</footer>
+<footer>✦ 我的圖書館 ✦ 書的資料只存在你這台裝置的瀏覽器裡，記得常到「備份」頁存一份喔</footer>
 </body>
 </html>

@@ -2,25 +2,11 @@
 const LIB_KEY = 'my-library-v1';
 
 const STATUS = { want: '想讀', reading: '正在讀', done: '讀完了' };
-const COLORS = ['#2f7d6d', '#a0673a', '#4a6fa5', '#b4442f', '#7a5195', '#c08b1c', '#3d7a3a', '#5b5b8f'];
+// 皮革封面的顏色
+const COLORS = ['#5b1a1a', '#1d3b2a', '#1c2a4a', '#4a2a12', '#3a1f4a', '#2b2b2b', '#5e4210', '#123c3c'];
 
-const SAMPLE_BOOKS = [
-  {
-    title: '小王子', author: '安東尼．聖修伯里', category: '經典文學', status: 'done', rating: 5,
-    notes: '「真正重要的東西，用眼睛是看不見的。」\n（這是範例書，可以編輯或刪除）',
-    links: [{ name: '維基百科介紹', url: 'https://zh.wikipedia.org/wiki/小王子' }]
-  },
-  {
-    title: '好餓的毛毛蟲', author: '艾瑞．卡爾', category: '繪本', status: 'reading', rating: 4,
-    notes: '（這是範例書，可以編輯或刪除）',
-    links: [{ name: '維基百科介紹', url: 'https://zh.wikipedia.org/wiki/好餓的毛毛蟲' }]
-  },
-  {
-    title: '夏綠蒂的網', author: 'E．B．懷特', category: '兒童小說', status: 'want', rating: 0,
-    notes: '（這是範例書，可以編輯或刪除）',
-    links: [{ name: '維基百科介紹', url: 'https://zh.wikipedia.org/wiki/夏綠蒂的網' }]
-  }
-];
+// 舊版會自動放的範例書，現在要清掉
+const OLD_SAMPLE_MARK = '（這是範例書，可以編輯或刪除）';
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -29,16 +15,13 @@ function uid() {
 function loadBooks() {
   let raw = null;
   try { raw = localStorage.getItem(LIB_KEY); } catch (e) { /* 無痕模式等 */ }
-  if (raw === null) {
-    const now = Date.now();
-    const books = SAMPLE_BOOKS.map((b, i) => ({ ...b, id: uid() + i, cover: '', added: now - i * 1000 }));
-    saveBooks(books);
-    return books;
-  }
-  try {
-    const data = JSON.parse(raw);
-    return Array.isArray(data) ? data : [];
-  } catch (e) { return []; }
+  if (raw === null) return [];
+  let data;
+  try { data = JSON.parse(raw); } catch (e) { return []; }
+  if (!Array.isArray(data)) return [];
+  const cleaned = data.filter(b => !(b && typeof b.notes === 'string' && b.notes.includes(OLD_SAMPLE_MARK)));
+  if (cleaned.length !== data.length) saveBooks(cleaned);
+  return cleaned;
 }
 
 function saveBooks(books) {
@@ -53,7 +36,7 @@ function esc(s) {
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-// 只接受 http / https 連結，避免奇怪的連結
+// 封面圖片只接受 http / https
 function safeUrl(u) {
   u = String(u || '').trim();
   if (!u) return '';
@@ -65,8 +48,6 @@ function safeUrl(u) {
   } catch (e) { return ''; }
 }
 
-function hostOf(u) { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; } }
-
 function colorFor(str) {
   let h = 0;
   for (const ch of String(str)) h = (h * 31 + ch.codePointAt(0)) >>> 0;
@@ -75,8 +56,8 @@ function colorFor(str) {
 
 function coverHtml(b) {
   const img = safeUrl(b.cover);
-  return `<div class="cover" style="background:${colorFor(b.title)}">
-    <span>${esc(b.title)}</span>
+  return `<div class="cover" style="--leather:${colorFor(b.title)}">
+    <span class="cover-title">${esc(b.title)}</span>
     ${img ? `<img src="${esc(img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
   </div>`;
 }

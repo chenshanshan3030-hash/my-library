@@ -3,17 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1a0c12">
 <title>書的資料 · 我的圖書館</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
-<link rel="stylesheet" href="assets/style.css?v=2">
-<script src="assets/app.js?v=2"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📜</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=3">
+<script src="assets/app.js?v=3"></script>
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="logo" href="index.html">📚 我的圖書館</a>
+  <a class="logo" href="index.html">📜 我的圖書館</a>
   <nav class="tabs">
-    <a href="index.html">🏠 書架</a>
-    <a href="add.html">➕ 加一本書</a>
+    <a href="index.html">🕯️ 書架</a>
+    <a href="add.html">🪶 加一本書</a>
     <a href="backup.html">💾 備份</a>
     <a href="about.html">❓ 說明</a>
   </nav>
@@ -30,13 +34,8 @@ if (!b) {
   view.innerHTML = '<div class="card empty"><div class="big">❓</div><p>找不到這本書，可能已經被刪除了。</p><a class="btn" href="index.html">回書架</a></div>';
 } else {
   document.title = b.title + ' · 我的圖書館';
-  const links = (b.links || []).map(l => {
-    const url = safeUrl(l.url);
-    return url ? `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">🔗
-      <span>${esc(l.name || hostOf(url))}<small>${esc(hostOf(url))}</small></span></a></li>` : '';
-  }).join('');
   view.innerHTML = `
-    <p><a href="index.html">← 回書架</a></p>
+    <a class="back" href="index.html">← 回書架</a>
     <div class="card detail">
       <div>${coverHtml(b)}</div>
       <div>
@@ -47,13 +46,11 @@ if (!b) {
           ${b.category ? `<span class="badge">${esc(b.category)}</span>` : ''}
           ${b.rating ? `<span class="stars" aria-label="${b.rating} 顆星">${starsText(b.rating)}</span>` : ''}
         </div>
-        <h2 style="font-size:1.1rem">🔗 連結</h2>
-        ${links ? `<ul class="links">${links}</ul>` : '<p class="muted">還沒有連結。按「編輯」就可以加。</p>'}
-        <h2 style="font-size:1.1rem">📝 心得 / 筆記</h2>
+        <h2 style="font-size:1.1rem">📜 心得 / 筆記</h2>
         ${b.notes ? `<div class="notes">${esc(b.notes)}</div>` : '<p class="muted">還沒有寫心得。</p>'}
         ${b.added ? `<p class="muted" style="font-size:.85rem">加入日期：${new Date(b.added).toLocaleDateString('zh-TW')}</p>` : ''}
         <div class="actions">
-          <a class="btn" href="add.html?id=${encodeURIComponent(b.id)}">✏️ 編輯</a>
+          <a class="btn" href="add.html?id=${encodeURIComponent(b.id)}">🪶 編輯</a>
           <button class="btn danger" id="del">🗑️ 刪除這本書</button>
         </div>
       </div>
@@ -62,10 +59,13 @@ if (!b) {
     if (!confirm('確定要把「' + b.title + '」從書架拿掉嗎？')) return;
     if (saveBooks(loadBooks().filter(x => x.id !== b.id))) location.href = 'index.html';
   };
-  if (qs('saved')) { toast(qs('saved') === '2' ? '✅ 修改好了！' : '✅ 已經放上書架了！'); history.replaceState(null, '', 'book.html?id=' + encodeURIComponent(b.id)); }
+  if (qs('saved')) {
+    toast(qs('saved') === '2' ? '✨ 修改好了！' : '✨ 已經放上書架了！');
+    history.replaceState(null, '', 'book.html?id=' + encodeURIComponent(b.id));
+  }
 }
 </script>
 </main>
-<footer>📚 我的圖書館 · 書的資料只存在你這台裝置的瀏覽器裡，記得常到「備份」頁存一份喔</footer>
+<footer>✦ 我的圖書館 ✦ 書的資料只存在你這台裝置的瀏覽器裡，記得常到「備份」頁存一份喔</footer>
 </body>
 </html>
